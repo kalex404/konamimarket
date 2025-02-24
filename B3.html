@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Link Generated</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #d50000, #8b0000);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 10px;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            width: 500px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .header img {
+            width: 180px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #d50000;
+            margin-bottom: 20px;
+        }
+        .link-box {
+            background: #f1f1f1;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border: 2px solid #ccc;
+        }
+        .link-box input {
+            width: 85%;
+            border: none;
+            background: none;
+            font-size: 16px;
+            outline: none;
+            color: #333;
+        }
+        .copy-btn {
+            background: #d50000;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+        }
+        .copy-btn:hover {
+            background: #b00000;
+        }
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .share-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .telegram-btn {
+            background: #0088cc;
+        }
+        .share-btn:hover {
+            opacity: 0.85;
+        }
+        .note {
+            background: #fff3cd;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #856404;
+            margin-top: 20px;
+            border: 1px solid #ffeeba;
+            text-align: left;
+        }
+        .note i {
+            margin-right: 6px;
+            color: #d39e00;
+        }
+        /* إشعار النسخ */
+        .copy-alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .copy-alert i {
+            color: white;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://my.konami.net/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo-konami.b3f34124.png&w=256&q=75" alt="Konami Logo">
+        </div>
+        <h2>Share this link with the buyer to complete the payment</h2>
+
+        <div class="link-box">
+            <input type="text" id="payment-link" value="https://konamimarket.com/payment/ABC123" readonly>
+            <button class="copy-btn" onclick="copyLink()">Copy</button>
+        </div>
+
+        <div class="share-buttons">
+            <button class="share-btn" onclick="shareWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+            <button class="share-btn telegram-btn" onclick="shareTelegram()"><i class="fab fa-telegram-plane"></i> Telegram</button>
+        </div>
+
+        <div class="note">
+            <i class="fas fa-info-circle"></i>
+            Once the buyer completes the payment, they will automatically receive the account details.
+        </div>
+    </div>
+
+    <!-- إشعار النسخ -->
+    <div class="copy-alert" id="copy-alert">
+        <i class="fas fa-check-circle"></i> Copied!
+    </div>
+
+    <script>
+        function copyLink() {
+            var link = document.getElementById("payment-link");
+            link.select();
+            link.setSelectionRange(0, 99999); 
+            document.execCommand("copy");
+
+            // إظهار الإشعار
+            var alertBox = document.getElementById("copy-alert");
+            alertBox.style.opacity = "1";
+
+            // إخفاؤه بعد 2 ثانية
+            setTimeout(function() {
+                alertBox.style.opacity = "0";
+            }, 2000);
+        }
+
+        function shareWhatsApp() {
+            var link = document.getElementById("payment-link").value;
+            window.open("https://wa.me/?text=" + encodeURIComponent("Complete your payment here: " + link), "_blank");
+        }
+
+        function shareTelegram() {
+            var link = document.getElementById("payment-link").value;
+            window.open("https://t.me/share/url?url=" + encodeURIComponent(link) + "&text=" + encodeURIComponent("Complete your payment here:"), "_blank");
+        }
+    </script>
+</body>
+</html>

